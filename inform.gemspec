@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = Inform::VERSION
   s.authors     = ["Michael Pearson", "Chris Ottrey"]
   s.email       = ["mipearson@gmail.com", ""]
-  s.homepage    = "https://github.com/playup/inform"
+  s.homepage    = "https://github.com/mipearson/inform"
   s.summary     = %q{Interactive, colourised logging}
   s.description = s.summary
 
