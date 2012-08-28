@@ -36,9 +36,12 @@ class Inform
 
     def info(message, args=nil)
       if block_given?
+        start = Time.now
         log(:info, ">>> " + color_args(message, args, GREEN) + " : ", :no_newline => true)
         ret = yield
-        log(:info, color('Done.', GREEN), :continue_line => true, :prefix => '>>> ')
+        elapsed = Time.now - start
+        message = elapsed > 0.01 ? "Done. (#{sprintf '%.2f', elapsed}s)" : 'Done.'
+        log(:info, color(message, GREEN), :continue_line => true, :prefix => '>>> ')
         ret
       else
         log(:info, "*** " + color_args(message, args, GREEN))
