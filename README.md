@@ -1,25 +1,40 @@
 # Inform
 
 **Inform** prints colourised, interactive logging output to the console.
+It includes support for timings and thread-local prefixes.
 
 For example:
 
-    Inform.level = :info
-    frozbot = Inform.info("Initializing the frozbot") do
-      Frozbot.new
-    end
-    
-    Inform.info("Frozbot is %{name}", :name => frozbot.name)
+``` ruby
+# Controllable log level filtering
+Inform.level = :info
+
+# Accept a block, print timing information once completed if > 0.1s
+frozbot = Inform.info("Initializing the frozbot") do
+  Frozbot.new
+  sleep 1
+end
+
+# Other log levels than info
+Inform.level = :debug
+Inform.debug("Madness")
+Inform.warning("and")
+Inform.error("Nonsense")
+
+# Thread-local log prefixing
+Thread.current[:inform] = '1'
+Inform.info("Frozbot is %{name}", :name => frozbot.name)
+```
 
 Will print:
 
-    >>> Initializing the frozbot : Done
-    *** Frozbot is myfrozbot
-
-### Caveat
-
-This code was taken directly from the our **dew** project and is not ready for prime time. Interfaces,
-requirements, etc will change.
+```
+>>> Initializing the frozbot : Done (1.00s)
+    Madness
+WARNING: and
+ERROR: Nonsense
+1 *** Frozbot is myfrozbot
+```
 
 ### TODO
 
@@ -27,12 +42,12 @@ requirements, etc will change.
  * Refactor tests
  * Colourisation isn't tested at all - should it be?
  * RDoc
- 
+
 ## License
 
 (The MIT License)
 
-Copyright (c) 2011 PlayUp
+Copyright (c) 2011 PlayUp, 2012-13 Michael Pearson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
