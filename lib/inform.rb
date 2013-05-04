@@ -21,6 +21,14 @@ class Inform
 
   class << self
 
+    def thread_prefix= prefix
+      Thread.current[:inform_prefix] = prefix
+    end
+
+    def thread_prefix
+      Thread.current[:inform_prefix]
+    end
+
     def level
       @level.nil? ? DEFAULT_LOG_LEVEL : @level
     end
@@ -35,13 +43,15 @@ class Inform
     end
 
     def info(message, args=nil)
+
       if block_given?
         start = Time.now
-        log(:info, ">>> " + color_args(message, args, GREEN) + " : ", :no_newline => true)
+        smart_newlines = thread_prefix.nil?
+        log(:info, ">>> " + color_args(message, args, GREEN) + " : ", :no_newline => smart_newlines)
         ret = yield
         elapsed = Time.now - start
         message = elapsed > 0.01 ? "Done. (#{sprintf '%.2f', elapsed}s)" : 'Done.'
-        log(:info, color(message, GREEN), :continue_line => true, :prefix => '>>> ')
+        log(:info, color(message, GREEN), :continue_line => smart_newlines, :prefix => '>>> ')
         ret
       else
         log(:info, "*** " + color_args(message, args, GREEN))
@@ -74,6 +84,10 @@ class Inform
           @need_newline = false
         end
         message += "\n" if end_with_newline
+        if Thread.current.key? :inform_prefix
+          message = Thread.current[:inform_prefix].to_s + ' ' + message
+        end
+
         $stdout.print message
         $stdout.flush
       end

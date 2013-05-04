@@ -10,6 +10,15 @@ def should_print method
       $stdout.should_receive(:print).with(/hello.+hey.+you.+goodbye/)
       Inform.send(method, "hello %{a} %{b} goodbye", :a => 'hey', :b => 'you')
     end
+    it "should prefix with the :inform thread variable if present" do
+      begin
+        Inform.thread_prefix = 'hi'
+        $stdout.should_receive(:print).with(/^hi .+blank/)
+        Inform.send(method, "blank")
+      ensure
+        Inform.thread_prefix = nil
+      end
+    end
   end
 end
 
@@ -57,35 +66,35 @@ describe Inform do
       Inform.level = :info
       Inform.level.should == :info
     end
-    
+
     it "should not allow us to set a log level that isn't recognized" do
       lambda {Inform.level = :warble}.should raise_error /unrecognized/i
     end
   end
-  
+
   context "with log level debug" do
     before { Inform.level = :debug }
 
-    should_print :debug    
-    should_print :info    
+    should_print :debug
+    should_print :info
     should_accept_block :info
     # should_accept_block :debug
 
     should_print :warning
     should_print :error
   end
-  
+
   context "with log level set to :info" do
     before { Inform.level = :info }
     should_not_print :debug
     should_print :info
     should_accept_block :info
     # should_accept_block :debug
-    
+
     should_print :warning
     should_print :error
   end
-  
+
   context "with log level set to :warning" do
     before { Inform.level = :warning }
     should_not_print :debug
@@ -100,7 +109,7 @@ describe Inform do
     should_not_print :info
     should_not_print :warning
     should_print :error
-    
+
     describe :info do
       it "should still execute the code block" do
         Inform.info("") { 'hello' }.should == 'hello'
