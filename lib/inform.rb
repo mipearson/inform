@@ -47,11 +47,20 @@ class Inform
       if block_given?
         start = Time.now
         smart_newlines = thread_prefix.nil?
-        log(:info, ">>> " + color_args(message, args, GREEN) + " : ", :no_newline => smart_newlines)
+        if smart_newlines
+          log(:info, ">>> " + color_args(message, args, GREEN) + " : ", :no_newline => true)
+        else
+          log(:info, ">>> " + color_args(message, args, GREEN) + " ... ")
+        end
+
         ret = yield
         elapsed = Time.now - start
-        message = elapsed > 0.01 ? "Done. (#{sprintf '%.2f', elapsed}s)" : 'Done.'
-        log(:info, color(message, GREEN), :continue_line => smart_newlines, :prefix => '>>> ')
+        completion = elapsed > 0.01 ? "Done. (#{sprintf '%.2f', elapsed}s)" : 'Done.'
+        if smart_newlines
+          log(:info, color(completion, GREEN), :continue_line => true, :prefix => '>>> ')
+        else
+          log(:info, "*** " + color(message, GREEN) + ' : ' + color(completion, GREEN))
+        end
         ret
       else
         log(:info, "*** " + color_args(message, args, GREEN))
