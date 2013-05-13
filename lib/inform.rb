@@ -49,11 +49,10 @@ class Inform
         smart_newlines = thread_prefix.nil?
         if smart_newlines
           log(:info, ">>> " + color_args(message, args, GREEN) + " : ", :no_newline => true)
-        else
-          log(:info, ">>> " + color_args(message, args, GREEN) + " ... ")
         end
 
         ret = yield
+
         elapsed = Time.now - start
         completion = elapsed > 0.01 ? "Done. (#{sprintf '%.2f', elapsed}s)" : 'Done.'
         if smart_newlines
