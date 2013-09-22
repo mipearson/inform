@@ -61,6 +61,17 @@ describe Inform do
     Inform.level = @oldlevel
   end
 
+  describe :output= do
+    after {Inform.output = nil}
+    it "should override the output buffer" do
+      buf = StringIO.new
+      Inform.output = buf
+      Inform.info("hello")
+      buf.rewind
+      expect(buf.read).to include('hello')
+    end
+  end
+
   describe :level= do
     it "should set the log level" do
       Inform.level = :info

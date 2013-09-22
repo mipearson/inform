@@ -18,8 +18,13 @@ class Inform
 
   DEFAULT_LOG_LEVEL = :info
   LOG_LEVELS = [:debug, :info, :warning, :error]
+  DEFAULT_OUTPUT = $stdout
 
   class << self
+
+    def output= stream
+      @output = stream
+    end
 
     def thread_prefix= prefix
       Thread.current[:inform_prefix] = prefix
@@ -96,8 +101,8 @@ class Inform
           message = Thread.current[:inform_prefix].to_s + ' ' + message
         end
 
-        $stdout.print message
-        $stdout.flush
+        output.print message
+        output.flush
       end
     end
 
@@ -115,6 +120,10 @@ class Inform
 
     def color(message, *colours)
       colours.join("") + message + CLEAR
+    end
+
+    def output
+      @output.nil? ? DEFAULT_OUTPUT : @output
     end
   end
 end

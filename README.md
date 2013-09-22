@@ -24,6 +24,13 @@ Inform.error("Nonsense")
 # Thread-local log prefixing
 Thread.current[:inform] = '1'
 Inform.info("Frozbot is %{name}", :name => frozbot.name)
+
+# Override output stream
+buf = StringIO.new
+Inform.output = buf
+Inform.info("Loggable..")
+buf.rewind
+puts buf.read
 ```
 
 Will print:
